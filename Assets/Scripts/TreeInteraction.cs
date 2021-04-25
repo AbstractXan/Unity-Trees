@@ -24,11 +24,10 @@ public class TreeInteraction : MonoBehaviour
    */ 
    void OnCollisionEnter2D(Collision2D other){
       if (other.gameObject.CompareTag("Player")){
-      cutTree();
-      
-      Player p = other.gameObject.GetComponent<Player>();
-      p.addLogs(CUT_LOGS);
-      
+         if(cutTree()){
+            Player p = other.gameObject.GetComponent<Player>();
+            p.addLogs(CUT_LOGS);
+         }
       }
    }
 
@@ -47,20 +46,22 @@ public class TreeInteraction : MonoBehaviour
    }
    
    private void growTree(){
+      Debug.Log(gameObject.name);
       if(logs <= MAX_LOGS-GROW_LOGS){
          logs = logs + GROW_LOGS;
       }
       updateSprite(); // important
    }
 
-   private void cutTree(){
+   private bool cutTree(){
       int minLogCountToCut = MIN_LOGS + CUT_LOGS;
       if(logs >= minLogCountToCut){ 
          logs -= CUT_LOGS;
+         updateSprite(); // important
+         Invoke("growTree", 5.0f); 
+         return true;
       }
-      updateSprite(); // important
-      // Regrow tree
-      Invoke("growTree", Random.Range(10.0f,20.0f)); 
+      return false;   
    }
    
 }
